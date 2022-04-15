@@ -1,0 +1,19 @@
+version: "3"
+services:
+  policy-tool:
+    build: .
+    container_name: policy-tool
+    working_dir: /policy-tool
+    user: node
+    volumes:
+      - "./:/policy-tool"
+    tty: true
+    networks:
+      - uth-network
+    ports:
+      - "3000:3000"
+    command: /bin/bash
+
+networks:
+  uth-network:
+    name: uth-network
