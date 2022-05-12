@@ -15,6 +15,7 @@ class AbacRulesElement extends React.Component<any, any> {
             subjectAttribute: "",
             resourceAttribute: "",
             actionAttribute: "",
+            environmentAttribute: "",
             rules: new Map()
         }
 
@@ -31,6 +32,10 @@ class AbacRulesElement extends React.Component<any, any> {
 
     private onActionSelectedAttributeChange = (selectedAttribute: string) => {
         this.setState({actionAttribute: selectedAttribute});
+    }
+
+    private onEnvironmentSelectedAttributeChange = (selectedAttribute: string) => {
+        this.setState({environmentAttribute: selectedAttribute});
     }
 
     private onDescriptionChangeListener = (event: any) => {
@@ -55,7 +60,8 @@ class AbacRulesElement extends React.Component<any, any> {
             effect: "",
             subjectAttribute: "",
             resourceAttribute: "",
-            actionAttribute: ""
+            actionAttribute: "",
+            environmentAttribute: ""
         })
 
         this.onRulesChange(rules);
@@ -76,7 +82,8 @@ class AbacRulesElement extends React.Component<any, any> {
             effect: state.rules.get(selectionModel[0])?.effect,
             subjectAttribute: state.rules.get(selectionModel[0])?.subjectAttribute,
             resourceAttribute: state.rules.get(selectionModel[0])?.resourceAttribute,
-            actionAttribute: state.rules.get(selectionModel[0])?.actionAttribute
+            actionAttribute: state.rules.get(selectionModel[0])?.actionAttribute,
+            environmentAttribute: state.rules.get(selectionModel[0])?.environmentAttribute
         }))
     }
 
@@ -88,7 +95,8 @@ class AbacRulesElement extends React.Component<any, any> {
             effect: this.state.effect,
             subjectAttribute: this.state.subjectAttribute,
             resourceAttribute: this.state.resourceAttribute,
-            actionAttribute: this.state.actionAttribute
+            actionAttribute: this.state.actionAttribute,
+            environmentAttribute: this.state.environmentAttribute
         }
 
         this.setState((state: any) => ({
@@ -98,7 +106,8 @@ class AbacRulesElement extends React.Component<any, any> {
             effect: "",
             subjectAttribute: "",
             resourceAttribute: "",
-            actionAttribute: ""
+            actionAttribute: "",
+            environmentAttribute: ""
         }));
 
         this.onRulesChange(this.state.rules);
@@ -154,12 +163,15 @@ class AbacRulesElement extends React.Component<any, any> {
                 <AbacTargetElement subjectAttributes={this.props.subjectAttributes}
                                    resourceAttributes={this.props.resourceAttributes}
                                    actionAttributes={this.props.actionAttributes}
+                                   environmentAttributes={this.props.environmentAttributes}
                                    onSubjectSelectedAttributeChange={this.onSubjectSelectedAttributeChange}
                                    onResourceSelectedAttributeChange={this.onResourceSelectedAttributeChange}
                                    onActionSelectedAttributeChange={this.onActionSelectedAttributeChange}
+                                   onEnvironmentSelectedAttributeChange={this.onEnvironmentSelectedAttributeChange}
                                    selectedSubjectAttribute={this.state.subjectAttribute}
                                    selectedResourceAttribute={this.state.resourceAttribute}
                                    selectedActionAttribute={this.state.actionAttribute}
+                                   selectedEnvironmentAttribute={this.state.environmentAttribute}
                 />
 
                 <Button sx={{mt: 1}} color="success" variant="contained" fullWidth onClick={this.addRule}>{

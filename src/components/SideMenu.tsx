@@ -29,6 +29,7 @@ class SideMenu extends React.Component<any, any> {
                 <BottomNavigationAction label="Subject" component={Link} to="/subject" value="subject"/>
                 <BottomNavigationAction label="Resource" component={Link} to="/resource" value="resource"/>
                 <BottomNavigationAction label="Action" component={Link} to="/action" value="action"/>
+                <BottomNavigationAction label="Environment" component={Link} to="/environment" value="environment"/>
                 <BottomNavigationAction label="ABAC" component={Link} to="/abac" value="abac"/>
             </BottomNavigation>
         )

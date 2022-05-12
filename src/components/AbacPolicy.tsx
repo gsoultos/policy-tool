@@ -35,6 +35,7 @@ class AbacPolicy extends React.Component<any, any> {
             subjectAttributes: [],
             resourceAttributes: [],
             actionAttributes: [],
+            environmentAttributes: [],
             abacPolicies: [],
             description: "",
             policyId: "",
@@ -44,6 +45,7 @@ class AbacPolicy extends React.Component<any, any> {
             selectedSubjectAttribute: "",
             selectedResourceAttribute: "",
             selectedActionAttribute: "",
+            selectedEnvironmentAttribute: "",
             rules: [],
             error: false,
             errorMessage: ""
@@ -65,6 +67,7 @@ class AbacPolicy extends React.Component<any, any> {
             selectedSubjectAttribute: "",
             selectedResourceAttribute: "",
             selectedActionAttribute: "",
+            selectedEnvironmentAttribute: "",
             rules: []
         });
     }
@@ -101,6 +104,10 @@ class AbacPolicy extends React.Component<any, any> {
         this.setState({selectedActionAttribute: selectedAttribute})
     }
 
+    private onEnvironmentSelectedAttributeChange = (selectedAttribute: string) => {
+        this.setState({selectedEnvironmentAttribute: selectedAttribute})
+    }
+
     private onRulesChange = (rules: any[]) => {
         this.setState({rules: rules});
     }
@@ -112,7 +119,7 @@ class AbacPolicy extends React.Component<any, any> {
             rule.description = data.description;
             rule.ruleId = data.ruleId;
             rule.effect = data.effect;
-            rule.target = this.generateTarget(data.subjectAttribute, data.resourceAttribute, data.actionAttribute);
+            rule.target = this.generateTarget(data.subjectAttribute, data.resourceAttribute, data.actionAttribute, data.environmentAttribute);
             rules.push(rule);
         })
         return rules;
@@ -142,7 +149,7 @@ class AbacPolicy extends React.Component<any, any> {
         return match;
     }
 
-    private generateTarget(selectedSubject?: string, selectedResource?: string, selectedAction?: string): Target {
+    private generateTarget(selectedSubject?: string, selectedResource?: string, selectedAction?: string, selectedEnvironment?: string): Target {
         const matches: Match[] = [];
         if (selectedSubject && selectedSubject !== "") {
             matches.push(this.generateMatch("urn:oasis:names:tc:xacml:3.0:attribute-category:subject", this.state.subjectAttributes, selectedSubject));
@@ -154,6 +161,10 @@ class AbacPolicy extends React.Component<any, any> {
 
         if (selectedAction && selectedAction !== "") {
             matches.push(this.generateMatch("urn:oasis:names:tc:xacml:3.0:attribute-category:action", this.state.actionAttributes, selectedAction));
+        }
+
+        if (selectedEnvironment && selectedEnvironment !== "") {
+            matches.push(this.generateMatch("urn:oasis:names:tc:xacml:3.0:attribute-category:environment", this.state.environmentAttributes, selectedEnvironment));
         }
 
         const allOve = new AllOf();
@@ -173,7 +184,7 @@ class AbacPolicy extends React.Component<any, any> {
         const policy = new Policy();
 
         policy.description = this.state.description
-        policy.target = this.generateTarget(this.state.selectedSubjectAttribute, this.state.selectedResourceAttribute, this.state.selectedActionAttribute);
+        policy.target = this.generateTarget(this.state.selectedSubjectAttribute, this.state.selectedResourceAttribute, this.state.selectedActionAttribute, this.state.selectedEnvironmentAttribute);
         policy.combinerParametersAndRuleCombinerParametersAndVariableDefinitions = this.generateRules();
         policy.policyId = this.state.policyId;
         policy.version = this.state.version;
@@ -224,6 +235,12 @@ class AbacPolicy extends React.Component<any, any> {
             });
         });
 
+        CATEGORY_API.getAttributes("env").then(result => {
+            this.setState({
+                environmentAttributes: Object.entries(result.data)
+            });
+        });
+
         this.getABACPolicies();
     }
 
@@ -268,6 +285,7 @@ class AbacPolicy extends React.Component<any, any> {
                                         let selectedSubjectAttribute = "";
                                         let selectedResourceAttribute = "";
                                         let selectedActionAttribute = "";
+                                        let selectedEnvironmentAttribute = "";
 
                                         policy.target.anyOves[0].allOves[0].matches.forEach((match: any) => {
                                             if (match.attributeDesignator.category == "urn:oasis:names:tc:xacml:3.0:attribute-category:subject") {
@@ -276,6 +294,8 @@ class AbacPolicy extends React.Component<any, any> {
                                                 selectedResourceAttribute = `${match.attributeValue.content[0]}/${match.attributeDesignator.attributeId}`;
                                             } else if (match.attributeDesignator.category == "urn:oasis:names:tc:xacml:3.0:attribute-category:action") {
                                                 selectedActionAttribute = `${match.attributeValue.content[0]}/${match.attributeDesignator.attributeId}`;
+                                            } else if (match.attributeDesignator.category == "urn:oasis:names:tc:xacml:3.0:attribute-category:environment") {
+                                                selectedEnvironmentAttribute = `${match.attributeValue.content[0]}/${match.attributeDesignator.attributeId}`;
                                             }
                                         });
 
@@ -285,6 +305,7 @@ class AbacPolicy extends React.Component<any, any> {
                                             let selectedSubjectAttribute = "";
                                             let selectedResourceAttribute = "";
                                             let selectedActionAttribute = "";
+                                            let selectedEnvironmentAttribute = "";
 
                                             rule.target.anyOves[0].allOves[0].matches.forEach((match: any) => {
                                                 if (match.attributeDesignator.category == "urn:oasis:names:tc:xacml:3.0:attribute-category:subject") {
@@ -293,6 +314,8 @@ class AbacPolicy extends React.Component<any, any> {
                                                     selectedResourceAttribute = `${match.attributeValue.content[0]}/${match.attributeDesignator.attributeId}`;
                                                 } else if (match.attributeDesignator.category == "urn:oasis:names:tc:xacml:3.0:attribute-category:action") {
                                                     selectedActionAttribute = `${match.attributeValue.content[0]}/${match.attributeDesignator.attributeId}`;
+                                                } else if (match.attributeDesignator.category == "urn:oasis:names:tc:xacml:3.0:attribute-category:environment") {
+                                                    selectedEnvironmentAttribute = `${match.attributeValue.content[0]}/${match.attributeDesignator.attributeId}`;
                                                 }
                                             });
 
@@ -303,7 +326,8 @@ class AbacPolicy extends React.Component<any, any> {
                                                 effect: rule.effect,
                                                 subjectAttribute: selectedSubjectAttribute,
                                                 resourceAttribute: selectedResourceAttribute,
-                                                actionAttribute: selectedActionAttribute
+                                                actionAttribute: selectedActionAttribute,
+                                                environmentAttribute: selectedEnvironmentAttribute
                                             })
                                         });
 
@@ -317,6 +341,7 @@ class AbacPolicy extends React.Component<any, any> {
                                             selectedSubjectAttribute: selectedSubjectAttribute,
                                             selectedResourceAttribute: selectedResourceAttribute,
                                             selectedActionAttribute: selectedActionAttribute,
+                                            selectedEnvironmentAttribute: selectedEnvironmentAttribute,
                                             rules: rules
                                         });
                                     }
@@ -388,12 +413,15 @@ class AbacPolicy extends React.Component<any, any> {
                             <AbacTargetElement subjectAttributes={this.state.subjectAttributes}
                                                resourceAttributes={this.state.resourceAttributes}
                                                actionAttributes={this.state.actionAttributes}
+                                               environmentAttributes={this.state.environmentAttributes}
                                                onSubjectSelectedAttributeChange={this.onSubjectSelectedAttributeChange}
                                                onResourceSelectedAttributeChange={this.onResourceSelectedAttributeChange}
                                                onActionSelectedAttributeChange={this.onActionSelectedAttributeChange}
+                                               onEnvironmentSelectedAttributeChange={this.onEnvironmentSelectedAttributeChange}
                                                selectedSubjectAttribute={this.state.selectedSubjectAttribute}
                                                selectedResourceAttribute={this.state.selectedResourceAttribute}
                                                selectedActionAttribute={this.state.selectedActionAttribute}
+                                               selectedEnvironmentAttribute={this.state.selectedEnvironmentAttribute}
                             />
                         }/>
                         <Divider/>
@@ -401,6 +429,7 @@ class AbacPolicy extends React.Component<any, any> {
                             <AbacRulesElement subjectAttributes={this.state.subjectAttributes}
                                               resourceAttributes={this.state.resourceAttributes}
                                               actionAttributes={this.state.actionAttributes}
+                                              environmentAttributes={this.state.environmentAttributes}
                                               onRulesChange={this.onRulesChange}
                                               rules={this.state.rules}
                             />
