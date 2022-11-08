@@ -10,10 +10,10 @@ import SideMenu from "./components/SideMenu";
 import {CategoryApi, XACMLApi, ProjectApi, ABACApi} from "./api";
 import ABAC from "./pages/ABAC";
 
-export const CATEGORY_API = new CategoryApi(undefined, "http://localhost:8080")
-export const ABAC_API = new ABACApi(undefined, "http://localhost:8080")
-export const XACML_API = new XACMLApi(undefined, "http://localhost:8080")
-export const PROJECT_API = new ProjectApi(undefined, "http://localhost:8080")
+export const CATEGORY_API = new CategoryApi(undefined, process.env.BACKEND_HOST)
+export const ABAC_API = new ABACApi(undefined, process.env.BACKEND_HOST)
+export const XACML_API = new XACMLApi(undefined, process.env.BACKEND_HOST)
+export const PROJECT_API = new ProjectApi(undefined, process.env.BACKEND_HOST)
 
 function App() {
     return (
